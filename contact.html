@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聯絡資訊 | 奈米光學與生醫影像實驗室</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <div class="logo">奈米光學與生醫影像實驗室</div>
+        <nav class="nav-links">
+            <a href="index.html">首頁</a>
+            <a href="about.html">關於實驗室</a>
+            <a href="research.html">研究方向</a>
+            <a href="members.html">成員</a>
+            <a href="publications.html">成果與論文</a>
+            <a href="contact.html">聯絡資訊</a>
+        </nav>
+    </div>
+</header>
+
+<section>
+    <div class="section-inner">
+        <h1 class="section-title">聯絡資訊</h1>
+        <p class="section-subtitle">Contact</p>
+
+        <div class="contact-grid">
+            <div class="contact-item">
+                <p><span class="contact-label">指導教授：</span>XXX 教授 / 博士</p>
+                <p><span class="contact-label">E-mail：</span>yourname@xxx.ntu.edu.tw</p>
+                <p><span class="contact-label">實驗室位置：</span>國立 _______ 大學 _______ 大樓 ___ 樓 ___ 室</p>
+                <p><span class="contact-label">電話：</span>(+886) - ___ - ______</p>
+                <p class="mt-2 text-small">
+                    歡迎對奈米光學、生醫影像與 AI 有興趣的同學或合作夥伴來信洽談。
+                </p>
+            </div>
+
+            <div class="contact-map">
+                <strong>交通方式（示意，可自行修改）：</strong><br>
+                · 捷運：於 _______ 站下車，從 __ 號出口步行約 __ 分鐘。<br>
+                · 公車：可搭乘 _______ 路公車至 _______ 站。<br>
+                · 開車：可停放於 _______ 停車場或校園周邊停車空間。<br><br>
+                <span class="text-small">
+                    若需要更詳細路線或校園地圖，可附上：<br>
+                    · 校園地圖 PDF 或網頁連結<br>
+                    · Google Maps 位置連結
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-inner">
+        <div>© <span id="year"></span> 奈米光學與生醫影像實驗室</div>
+        <div>聯絡資訊</div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

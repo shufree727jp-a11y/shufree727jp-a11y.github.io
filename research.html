@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>研究方向 | 奈米光學與生醫影像實驗室</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <div class="logo">奈米光學與生醫影像實驗室</div>
+        <nav class="nav-links">
+            <a href="index.html">首頁</a>
+            <a href="about.html">關於實驗室</a>
+            <a href="research.html">研究方向</a>
+            <a href="members.html">成員</a>
+            <a href="publications.html">成果與論文</a>
+            <a href="contact.html">聯絡資訊</a>
+        </nav>
+    </div>
+</header>
+
+<section>
+    <div class="section-inner">
+        <h1 class="section-title">研究方向</h1>
+        <p class="section-subtitle">Research Directions</p>
+
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-title">1. 超穎介面與超穎透鏡設計</div>
+                <div class="card-tagline">Metasurface / Metalens</div>
+                <div class="card-body text-small">
+                    <ul>
+                        <li>可見光 / 近紅外 / 中紅外波段之超穎介面單元設計</li>
+                        <li>消色差超穎透鏡、多焦點與多功能元件</li>
+                        <li>深度學習與最佳化演算法輔助設計流程</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">2. 數位全像與相位顯微</div>
+                <div class="card-tagline">Digital Holography & QPI</div>
+                <div class="card-body text-small">
+                    <ul>
+                        <li>共路徑 / 多路徑數位全像顯微架構</li>
+                        <li>細胞與組織折射率與相位量測</li>
+                        <li>偏振解析 / 多模態相位成像</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">3. 生醫影像與 AI 分析</div>
+                <div class="card-tagline">Biomedical Imaging & AI</div>
+                <div class="card-body text-small">
+                    <ul>
+                        <li>深度學習影像重建與超解析</li>
+                        <li>自動細胞分割與型態分析</li>
+                        <li>疾病分類與診斷輔助指標建立</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title mt-3">代表性應用</h2>
+        <p class="text-small">
+            目前研究主題可應用於（請依實際情況修改）：
+            血液疾病檢測、腫瘤細胞分析、組織纖維化程度評估、藥物反應即時監控等。
+        </p>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-inner">
+        <div>© <span id="year"></span> 奈米光學與生醫影像實驗室</div>
+        <div>研究方向</div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

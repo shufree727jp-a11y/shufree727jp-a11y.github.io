@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奈米光學與生醫影像實驗室 | 首頁</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <div class="logo">奈米光學與生醫影像實驗室</div>
+        <nav class="nav-links">
+            <a href="index.html">首頁</a>
+            <a href="about.html">關於實驗室</a>
+            <a href="research.html">研究方向</a>
+            <a href="members.html">成員</a>
+            <a href="publications.html">成果與論文</a>
+            <a href="contact.html">聯絡資訊</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-inner">
+        <div>
+            <div class="hero-title">奈米光學與生醫影像實驗室</div>
+            <div class="hero-subtitle">Laboratory of Nanophotonics & Biomedical Imaging</div>
+            <p class="hero-text">
+                本實驗室聚焦於超穎介面（metasurface）、超穎透鏡（metalens）與數位全像等奈米光學技術，
+                建構新一代微型化、生醫導向的高解析光學成像平台，應用於疾病診斷與精準醫療。
+            </p>
+            <div class="hero-tags">
+                <span class="hero-tag">Metasurface</span>
+                <span class="hero-tag">Metalens</span>
+                <span class="hero-tag">Digital Holography</span>
+                <span class="hero-tag">Biomedical Imaging</span>
+                <span class="hero-tag">AI-assisted Optics</span>
+            </div>
+            <div class="hero-btns">
+                <a href="research.html" class="btn-primary">了解研究方向</a>
+                <a href="members.html" class="btn-outline">認識實驗室成員</a>
+            </div>
+        </div>
+        <div class="hero-figure">
+            <div class="hero-figure-title">實驗室簡介</div>
+            <p class="hero-figure-text">
+                實驗室隸屬於（請填入實際學院／研究院與系所名稱），
+                結合奈米製程、生醫樣本製備與影像分析，發展從「光學元件」到「臨床應用」的完整技術鏈。
+            </p>
+            <p class="hero-figure-text">
+                我們歡迎具有物理、電機、光電、生醫工程或醫學背景的同學與研究人員加入，
+                一同探索奈米光學與生醫影像的跨領域研究。
+            </p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="section-inner">
+        <h2 class="section-title">最新消息（示意）</h2>
+        <p class="section-subtitle">News & Announcements</p>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-title">徵求研究生與專任助理</div>
+                <div class="card-body text-small">
+                    歡迎對超穎介面、奈米光學、生醫影像或 AI 影像分析有興趣的同學來信洽詢。
+                    可依背景安排不同主題之研究計畫。
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">恭喜論文發表於 XXXX 期刊</div>
+                <div class="card-body text-small">
+                    實驗室近期工作 “Paper title ...” 已發表於國際期刊 XXXX，
+                    歡迎參考我們的成果頁面以了解更多細節。
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">參與國際會議 / 專題演講</div>
+                <div class="card-body text-small">
+                    實驗室成員將於 XXXX 年參與某某國際會議，發表關於 metasurface-based imaging 的研究。
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="section-inner">
+        <h2 class="section-title">研究方向一覽</h2>
+        <p class="section-subtitle">Research at a Glance</p>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-title">超穎介面與金屬透鏡</div>
+                <div class="card-body text-small">
+                    使用半導體製程實作奈米結構，實現高效率、多功能的 metasurface 元件，
+                    包含消色差超穎透鏡與多焦點光場設計。
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">數位全像與相位顯微</div>
+                <div class="card-body text-small">
+                    建構微型化數位全像系統，進行細胞、組織與材料的相位量測與三維重建。
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">生醫影像與 AI</div>
+                <div class="card-body text-small">
+                    與臨床團隊合作，發展 AI 輔助影像重建、去雜訊與疾病分類方法，
+                    應用於血液疾病、腫瘤與組織病理分析。
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-inner">
+        <div>© <span id="year"></span> 奈米光學與生醫影像實驗室</div>
+        <div>Last updated: 請自行填寫日期</div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

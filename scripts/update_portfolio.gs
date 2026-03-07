@@ -84,6 +84,13 @@ function fetchTWPrices_(symbols) {
 
     // 1) 先用 TWSE MIS；2) 抓不到再用 Yahoo Finance；3) 再抓不到標示無即時
     if (!(quote && quote.lastPrice > 0)) {
+      const legacyQuote = fetchFromTWSELegacy_(symbol);
+      if (legacyQuote && legacyQuote.lastPrice > 0) {
+        quote = legacyQuote;
+      }
+    }
+
+    if (!(quote && quote.lastPrice > 0)) {
       const yahooQuote = fetchFromYahoo_(symbol);
       if (yahooQuote && yahooQuote.lastPrice > 0) {
         quote = yahooQuote;
@@ -151,6 +158,31 @@ function fetchFromTWSE_(symbol) {
   }
 
   return null;
+}
+
+
+function fetchFromTWSELegacy_(symbol) {
+  // 依你提供的可用邏輯：抓 y（昨收）
+  const url = `http://mis.tse.com.tw/stock/api/getStock.jsp?ch=${symbol}.tw&json=1&_=`;
+  try {
+    const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (res.getResponseCode() !== 200) return null;
+    const data = JSON.parse(res.getContentText('UTF-8'));
+    const row = (data.msgArray || [])[0];
+    if (!row) return null;
+
+    const y = Number(row.y || 0);
+    if (!(y > 0)) return null;
+
+    return {
+      lastPrice: y,
+      name: row.n || symbol,
+      priceSource: 'TWSE昨收(legacy)',
+      lastPriceAt: ''
+    };
+  } catch (e) {
+    return null;
+  }
 }
 
 function fetchFromYahoo_(symbol) {

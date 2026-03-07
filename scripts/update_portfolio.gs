@@ -37,18 +37,35 @@ function readTrades_(sheetName) {
   const headers = values[0].map(h => String(h).trim());
   const idx = Object.fromEntries(headers.map((h, i) => [h, i]));
 
+  // 支援英文與中文欄位名稱
+  const col = {
+    date: pickCol_(idx, ['Date', '日期']),
+    symbol: pickCol_(idx, ['Symbol', '股票代號', '代號']),
+    market: pickCol_(idx, ['Market', '市場']),
+    side: pickCol_(idx, ['Side', '買賣別', '買賣']),
+    shares: pickCol_(idx, ['Shares', '股數']),
+    price: pickCol_(idx, ['Price', '成交價', '價格']),
+    fee: pickCol_(idx, ['Fee', '手續費']),
+    tax: pickCol_(idx, ['Tax', '交易稅', '稅']),
+    note: pickCol_(idx, ['Note', '備註'])
+  };
+
+  if (col.symbol < 0) {
+    throw new Error('找不到股票代號欄位（Symbol/股票代號/代號）');
+  }
+
   return values.slice(1)
-    .filter(r => r[idx.Symbol])
+    .filter(r => String(r[col.symbol] || '').trim())
     .map(r => ({
-      date: formatDate_(r[idx.Date]),
-      symbol: String(r[idx.Symbol]).trim(),
-      market: String(r[idx.Market] || 'TW').trim(),
-      side: String(r[idx.Side] || '').trim().toUpperCase(),
-      shares: Number(r[idx.Shares] || 0),
-      price: Number(r[idx.Price] || 0),
-      fee: Number(r[idx.Fee] || 0),
-      tax: Number(r[idx.Tax] || 0),
-      note: String(r[idx.Note] || '').trim()
+      date: col.date >= 0 ? formatDate_(r[col.date]) : '',
+      symbol: String(r[col.symbol] || '').trim(),
+      market: col.market >= 0 ? String(r[col.market] || 'TW').trim() : 'TW',
+      side: normalizeSide_(col.side >= 0 ? String(r[col.side] || '').trim() : ''),
+      shares: col.shares >= 0 ? Number(r[col.shares] || 0) : 0,
+      price: col.price >= 0 ? Number(r[col.price] || 0) : 0,
+      fee: col.fee >= 0 ? Number(r[col.fee] || 0) : 0,
+      tax: col.tax >= 0 ? Number(r[col.tax] || 0) : 0,
+      note: col.note >= 0 ? String(r[col.note] || '').trim() : ''
     }))
     .sort((a, b) => (a.date > b.date ? 1 : -1));
 }
@@ -208,6 +225,20 @@ function formatDate_(v) {
     return Utilities.formatDate(v, 'Asia/Taipei', 'yyyy-MM-dd');
   }
   return String(v).slice(0, 10);
+}
+
+function normalizeSide_(v) {
+  const s = String(v || '').trim().toUpperCase();
+  if (s === '買' || s === '買進' || s === 'BUY' || s === 'B') return 'BUY';
+  if (s === '賣' || s === '賣出' || s === 'SELL' || s === 'S') return 'SELL';
+  return s;
+}
+
+function pickCol_(idx, names) {
+  for (const n of names) {
+    if (Object.prototype.hasOwnProperty.call(idx, n)) return idx[n];
+  }
+  return -1;
 }
 
 function round2_(n) { return Math.round((Number(n) || 0) * 100) / 100; }

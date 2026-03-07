@@ -6,7 +6,10 @@
     "totalCost": 0,
     "marketValue": 0,
     "unrealizedPnl": 0,
-    "unrealizedPnlPct": 0
+    "realizedPnl": 0,
+    "dividendCash": 0,
+    "totalPnl": 0,
+    "totalPnlPct": 0
   },
   "positions": [
     {
@@ -17,7 +20,11 @@
       "lastPrice": 0,
       "marketValue": 0,
       "unrealizedPnl": 0,
-      "unrealizedPnlPct": 0
+      "realizedPnl": 0,
+      "dividendCash": 0,
+      "dividendStockShares": 0,
+      "totalPnl": 0,
+      "totalPnlPct": 0
     }
   ],
   "trades": [
@@ -27,9 +34,10 @@
       "side": "BUY",
       "shares": 0,
       "price": 0,
+      "amount": 0,
       "fee": 0,
       "tax": 0,
-      "note": "請用 Google Sheet/腳本更新"
+      "note": "支援 BUY/SELL/DIVIDEND_CASH/DIVIDEND_STOCK"
     }
   ]
 }

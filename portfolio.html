@@ -45,6 +45,9 @@
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">現價</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">市值</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">未實現損益</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">已實現損益</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">現金股利</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">總報酬</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -60,7 +63,7 @@
                         <tr>
                             <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">日期</th>
                             <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">代號</th>
-                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">買/賣</th>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">類型</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">股數</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">成交價</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">手續費</th>
@@ -91,6 +94,15 @@
       const val = Number(n) || 0;
       return `${val >= 0 ? '+' : ''}${money(val)}`;
     };
+        const sideLabel = (side) => {
+          const m = {
+            BUY: '買進',
+            SELL: '賣出',
+            DIVIDEND_CASH: '現金股利',
+            DIVIDEND_STOCK: '股票股利'
+          };
+          return m[side] || side || '';
+        };
 
     async function loadPortfolio() {
       try {
@@ -103,7 +115,10 @@
         const cards = [
           { label: '總成本', value: money(summary.totalCost), color: '#222' },
           { label: '總市值', value: money(summary.marketValue), color: '#222' },
-          { label: '未實現損益', value: signed(summary.unrealizedPnl), color: Number(summary.unrealizedPnl) >= 0 ? '#0a7d2e' : '#c62828' }
+          { label: '未實現損益', value: signed(summary.unrealizedPnl), color: Number(summary.unrealizedPnl) >= 0 ? '#0a7d2e' : '#c62828' },
+          { label: '已實現損益', value: signed(summary.realizedPnl), color: Number(summary.realizedPnl) >= 0 ? '#0a7d2e' : '#c62828' },
+          { label: '累積現金股利', value: signed(summary.dividendCash), color: '#0a7d2e' },
+          { label: '總報酬', value: signed(summary.totalPnl), color: Number(summary.totalPnl) >= 0 ? '#0a7d2e' : '#c62828' }
         ];
 
         document.getElementById('summary-cards').innerHTML = cards.map(c => `
@@ -123,6 +138,9 @@
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.lastPrice)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.marketValue)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:${Number(p.unrealizedPnl) >= 0 ? '#0a7d2e' : '#c62828'};">${signed(p.unrealizedPnl)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:${Number(p.realizedPnl) >= 0 ? '#0a7d2e' : '#c62828'};">${signed(p.realizedPnl)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:#0a7d2e;">${signed(p.dividendCash)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:${Number(p.totalPnl) >= 0 ? '#0a7d2e' : '#c62828'};">${signed(p.totalPnl)}</td>
           </tr>
         `).join('');
 
@@ -131,7 +149,7 @@
           <tr>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.date || ''}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.symbol || ''}</td>
-            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.side || ''}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${sideLabel(t.side)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${fmt.format(Number(t.shares) || 0)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.price)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.fee)}</td>

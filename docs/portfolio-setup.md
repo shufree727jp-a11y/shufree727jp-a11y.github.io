@@ -7,17 +7,19 @@
 
 第一列欄位請固定如下：
 
-| Date | Symbol | Market | Side | Shares | Price | Fee | Tax | Note |
-|---|---|---|---|---:|---:|---:|---:|---|
-| 2026-03-07 | 2330 | TW | BUY | 1000 | 978 | 1426 | 0 | 首次建倉 |
+| Date | Symbol | Market | Side | Shares | Price | Amount | Fee | Tax | Note |
+|---|---|---|---|---:|---:|---:|---:|---:|---|
+| 2026/03/07 | 2330 | TW | BUY | 1000 | 978 | 0 | 1426 | 0 | 首次建倉 |
 
 欄位說明：
 - `Date`: 交易日期（YYYY-MM-DD）
 - `Symbol`: 股票代號（台股四碼）
 - `Market`: 固定 `TW`
-- `Side`: `BUY` 或 `SELL`
-- `Shares`: 股數
+
+- `Side`: `BUY` / `SELL` / `DIVIDEND_CASH` / `DIVIDEND_STOCK`（也可填 買/賣/現金股利/股票股利）
+- `Shares`: 股數（股票股利可填配股股數）
 - `Price`: 成交價
+- `Amount`: 金額（現金股利建議填總金額）
 - `Fee`: 手續費
 - `Tax`: 交易稅（賣出有）
 - `Note`: 備註
@@ -53,12 +55,13 @@
 ## 6) 欄位名稱可用中文（已支援）
 目前腳本同時支援英文與中文欄位名稱，對照如下：
 
-- Date / 日期
+- Date / 日期（支援 `2022/4/29`，會自動轉 `2022-04-29`）
 - Symbol / 股票代號 / 代號
 - Market / 市場
-- Side / 買賣別 / 買賣（可填 BUY/SELL 或 買/賣）
+- Side / 買賣別 / 買賣 / 類型（可填 BUY/SELL、買/賣、現金股利、股票股利）
 - Shares / 股數
 - Price / 成交價 / 價格
 - Fee / 手續費
 - Tax / 交易稅 / 稅
+- Amount / 金額 / 總金額（股利用）
 - Note / 備註

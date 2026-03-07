@@ -2,7 +2,7 @@
  * 台股投資紀錄每日更新（Google Apps Script）
  * - 讀取 Sheet: Trades
  * - 取得台股價格（TWSE MIS）
- * - 計算持倉/損益
+ * - 計算持倉/未實現/已實現/股利/總報酬
  * - 更新 GitHub: data/portfolio.json
  */
 
@@ -37,43 +37,48 @@ function readTrades_(sheetName) {
   const headers = values[0].map(h => String(h).trim());
   const idx = Object.fromEntries(headers.map((h, i) => [h, i]));
 
-  // 支援英文與中文欄位名稱
   const col = {
     date: pickCol_(idx, ['Date', '日期']),
     symbol: pickCol_(idx, ['Symbol', '股票代號', '代號']),
     market: pickCol_(idx, ['Market', '市場']),
-    side: pickCol_(idx, ['Side', '買賣別', '買賣']),
+    side: pickCol_(idx, ['Side', '買賣別', '買賣', '類型']),
     shares: pickCol_(idx, ['Shares', '股數']),
-    price: pickCol_(idx, ['Price', '成交價', '價格']),
+    price: pickCol_(idx, ['Price', '成交價', '價格', '每股金額']),
+    amount: pickCol_(idx, ['Amount', '金額', '總金額']),
     fee: pickCol_(idx, ['Fee', '手續費']),
     tax: pickCol_(idx, ['Tax', '交易稅', '稅']),
     note: pickCol_(idx, ['Note', '備註'])
   };
 
-  if (col.symbol < 0) {
-    throw new Error('找不到股票代號欄位（Symbol/股票代號/代號）');
-  }
+  if (col.symbol < 0) throw new Error('找不到股票代號欄位（Symbol/股票代號/代號）');
+  if (col.side < 0) throw new Error('找不到買賣別欄位（Side/買賣別/買賣/類型）');
 
   return values.slice(1)
     .filter(r => String(r[col.symbol] || '').trim())
-    .map(r => ({
-      date: col.date >= 0 ? formatDate_(r[col.date]) : '',
-      symbol: String(r[col.symbol] || '').trim(),
-      market: col.market >= 0 ? String(r[col.market] || 'TW').trim() : 'TW',
-      side: normalizeSide_(col.side >= 0 ? String(r[col.side] || '').trim() : ''),
-      shares: col.shares >= 0 ? Number(r[col.shares] || 0) : 0,
-      price: col.price >= 0 ? Number(r[col.price] || 0) : 0,
-      fee: col.fee >= 0 ? Number(r[col.fee] || 0) : 0,
-      tax: col.tax >= 0 ? Number(r[col.tax] || 0) : 0,
-      note: col.note >= 0 ? String(r[col.note] || '').trim() : ''
-    }))
+    .map(r => {
+      const side = normalizeSide_(col.side >= 0 ? String(r[col.side] || '').trim() : '');
+      const shares = col.shares >= 0 ? Number(r[col.shares] || 0) : 0;
+      const price = col.price >= 0 ? Number(r[col.price] || 0) : 0;
+      const amount = col.amount >= 0 ? Number(r[col.amount] || 0) : 0;
+      return {
+        date: col.date >= 0 ? formatDate_(r[col.date]) : '',
+        symbol: String(r[col.symbol] || '').trim(),
+        market: col.market >= 0 ? String(r[col.market] || 'TW').trim() : 'TW',
+        side,
+        shares,
+        price,
+        amount,
+        fee: col.fee >= 0 ? Number(r[col.fee] || 0) : 0,
+        tax: col.tax >= 0 ? Number(r[col.tax] || 0) : 0,
+        note: col.note >= 0 ? String(r[col.note] || '').trim() : ''
+      };
+    })
     .sort((a, b) => (a.date > b.date ? 1 : -1));
 }
 
 function fetchTWPrices_(symbols) {
   const out = {};
   symbols.forEach(symbol => {
-    // 優先上市，再嘗試上櫃
     const urls = [
       `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`,
       `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${symbol}.tw&json=1&delay=0`
@@ -86,35 +91,31 @@ function fetchTWPrices_(symbols) {
       try {
         const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
         if (res.getResponseCode() !== 200) continue;
-
         const data = JSON.parse(res.getContentText());
         const arr = data.msgArray || [];
         if (!arr.length) continue;
 
         const row = arr[0];
         name = row.n || symbol;
-        // z: 當盤成交價，若無則用 y(昨收)
         const z = Number(row.z || 0);
         const y = Number(row.y || 0);
         price = z > 0 ? z : y;
-
         if (price > 0) break;
-      } catch (e) {
-        // ignore and try next
-      }
+      } catch (e) {}
     }
 
     out[symbol] = { lastPrice: price, name };
   });
-
   return out;
 }
 
 function buildPortfolio_(trades, priceMap) {
-  const positions = {}; // symbol -> {shares, totalCost}
+  const positions = {}; // symbol -> {shares, totalCost, realizedPnl, dividendCash, dividendStockShares}
 
   trades.forEach(t => {
-    if (!positions[t.symbol]) positions[t.symbol] = { shares: 0, totalCost: 0 };
+    if (!positions[t.symbol]) {
+      positions[t.symbol] = { shares: 0, totalCost: 0, realizedPnl: 0, dividendCash: 0, dividendStockShares: 0 };
+    }
     const p = positions[t.symbol];
 
     if (t.side === 'BUY') {
@@ -122,21 +123,33 @@ function buildPortfolio_(trades, priceMap) {
       p.shares += t.shares;
     } else if (t.side === 'SELL') {
       const avg = p.shares > 0 ? p.totalCost / p.shares : 0;
-      p.totalCost -= avg * t.shares;
+      const proceeds = t.shares * t.price - t.fee - t.tax;
+      const costOut = avg * t.shares;
+      p.realizedPnl += proceeds - costOut;
+      p.totalCost -= costOut;
       p.totalCost = Math.max(0, p.totalCost);
       p.shares -= t.shares;
       p.shares = Math.max(0, p.shares);
+    } else if (t.side === 'DIVIDEND_CASH') {
+      const cash = t.amount > 0 ? t.amount : (t.shares * t.price);
+      p.dividendCash += Math.max(0, cash - t.fee - t.tax);
+    } else if (t.side === 'DIVIDEND_STOCK') {
+      const bonusShares = t.shares > 0 ? t.shares : (t.amount > 0 ? t.amount : 0);
+      p.dividendStockShares += bonusShares;
+      p.shares += bonusShares;
+      // 股票股利成本視為0，不增加 totalCost
     }
   });
 
   const posArr = Object.entries(positions)
-    .filter(([, p]) => p.shares > 0)
+    .filter(([, p]) => p.shares > 0 || p.realizedPnl !== 0 || p.dividendCash !== 0)
     .map(([symbol, p]) => {
       const quote = priceMap[symbol] || { lastPrice: 0, name: symbol };
       const avgCost = p.shares > 0 ? p.totalCost / p.shares : 0;
       const marketValue = p.shares * quote.lastPrice;
       const unrealizedPnl = marketValue - p.totalCost;
-      const unrealizedPnlPct = p.totalCost > 0 ? unrealizedPnl / p.totalCost : 0;
+      const totalPnl = unrealizedPnl + p.realizedPnl + p.dividendCash;
+      const totalPnlPct = p.totalCost > 0 ? totalPnl / p.totalCost : 0;
       return {
         symbol,
         name: quote.name,
@@ -145,13 +158,20 @@ function buildPortfolio_(trades, priceMap) {
         lastPrice: round2_(quote.lastPrice),
         marketValue: round2_(marketValue),
         unrealizedPnl: round2_(unrealizedPnl),
-        unrealizedPnlPct: round4_(unrealizedPnlPct)
+        realizedPnl: round2_(p.realizedPnl),
+        dividendCash: round2_(p.dividendCash),
+        dividendStockShares: round4_(p.dividendStockShares),
+        totalPnl: round2_(totalPnl),
+        totalPnlPct: round4_(totalPnlPct)
       };
     });
 
   const totalCost = posArr.reduce((s, x) => s + x.avgCost * x.shares, 0);
   const marketValue = posArr.reduce((s, x) => s + x.marketValue, 0);
-  const unrealizedPnl = marketValue - totalCost;
+  const unrealizedPnl = posArr.reduce((s, x) => s + x.unrealizedPnl, 0);
+  const realizedPnl = posArr.reduce((s, x) => s + x.realizedPnl, 0);
+  const dividendCash = posArr.reduce((s, x) => s + x.dividendCash, 0);
+  const totalPnl = unrealizedPnl + realizedPnl + dividendCash;
 
   return {
     updatedAt: Utilities.formatDate(new Date(), 'Asia/Taipei', "yyyy-MM-dd'T'HH:mm:ssXXX"),
@@ -161,10 +181,13 @@ function buildPortfolio_(trades, priceMap) {
       totalCost: round2_(totalCost),
       marketValue: round2_(marketValue),
       unrealizedPnl: round2_(unrealizedPnl),
-      unrealizedPnlPct: totalCost > 0 ? round4_(unrealizedPnl / totalCost) : 0
+      realizedPnl: round2_(realizedPnl),
+      dividendCash: round2_(dividendCash),
+      totalPnl: round2_(totalPnl),
+      totalPnlPct: totalCost > 0 ? round4_(totalPnl / totalCost) : 0
     },
     positions: posArr,
-    trades: trades
+    trades
   };
 }
 
@@ -175,7 +198,6 @@ function pushJsonToGitHub_(cfg, path, obj) {
 
   const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
 
-  // 先取 sha（若檔案已存在）
   let sha = null;
   const getRes = UrlFetchApp.fetch(`${api}?ref=${cfg.branch}`, {
     method: 'get',
@@ -185,20 +207,13 @@ function pushJsonToGitHub_(cfg, path, obj) {
       Accept: 'application/vnd.github+json'
     }
   });
-
   if (getRes.getResponseCode() === 200) {
-    const data = JSON.parse(getRes.getContentText());
-    sha = data.sha;
+    sha = JSON.parse(getRes.getContentText()).sha;
   }
-
-  const content = Utilities.base64Encode(
-    JSON.stringify(obj, null, 2),
-    Utilities.Charset.UTF_8
-  );
 
   const payload = {
     message: `chore: update portfolio data (${new Date().toISOString()})`,
-    content,
+    content: Utilities.base64Encode(JSON.stringify(obj, null, 2), Utilities.Charset.UTF_8),
     branch: cfg.branch
   };
   if (sha) payload.sha = sha;
@@ -224,13 +239,24 @@ function formatDate_(v) {
   if (Object.prototype.toString.call(v) === '[object Date]') {
     return Utilities.formatDate(v, 'Asia/Taipei', 'yyyy-MM-dd');
   }
-  return String(v).slice(0, 10);
+
+  const s = String(v).trim();
+  const m = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+  if (m) {
+    const yyyy = m[1];
+    const mm = String(Number(m[2])).padStart(2, '0');
+    const dd = String(Number(m[3])).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return s.slice(0, 10);
 }
 
 function normalizeSide_(v) {
   const s = String(v || '').trim().toUpperCase();
-  if (s === '買' || s === '買進' || s === 'BUY' || s === 'B') return 'BUY';
-  if (s === '賣' || s === '賣出' || s === 'SELL' || s === 'S') return 'SELL';
+  if (['買', '買進', 'BUY', 'B'].includes(s)) return 'BUY';
+  if (['賣', '賣出', 'SELL', 'S'].includes(s)) return 'SELL';
+  if (['現金股利', '股利', '股息', 'DIVIDEND', 'DIVIDEND_CASH', 'CASH_DIVIDEND'].includes(s)) return 'DIVIDEND_CASH';
+  if (['股票股利', '配股', 'DIVIDEND_STOCK', 'STOCK_DIVIDEND'].includes(s)) return 'DIVIDEND_STOCK';
   return s;
 }
 

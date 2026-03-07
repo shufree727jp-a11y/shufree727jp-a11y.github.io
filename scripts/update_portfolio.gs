@@ -87,6 +87,8 @@ function fetchTWPrices_(symbols) {
 
     let price = 0;
     let name = symbol;
+    let priceSource = 'NO_DATA';
+    let lastPriceAt = '';
 
     for (const url of urls) {
       try {
@@ -100,12 +102,26 @@ function fetchTWPrices_(symbols) {
         name = row.n || symbol;
         const z = Number(row.z || 0);
         const y = Number(row.y || 0);
-        price = z > 0 ? z : y;
+        // tlong: 成交時間(毫秒)
+        if (row.tlong) {
+          try {
+            lastPriceAt = Utilities.formatDate(new Date(Number(row.tlong)), 'Asia/Taipei', 'yyyy-MM-dd HH:mm:ss');
+          } catch (e) {}
+        }
+
+        if (z > 0) {
+          price = z;
+          priceSource = '當盤';
+        } else if (y > 0) {
+          price = y;
+          priceSource = '昨收';
+        }
+
         if (price > 0) break;
       } catch (e) {}
     }
 
-    out[symbol] = { lastPrice: price, name };
+    out[symbol] = { lastPrice: price, name, priceSource, lastPriceAt };
   });
   return out;
 }
@@ -157,6 +173,8 @@ function buildPortfolio_(trades, priceMap) {
         shares: p.shares,
         avgCost: round2_(avgCost),
         lastPrice: round2_(quote.lastPrice),
+        priceSource: quote.priceSource || 'NO_DATA',
+        lastPriceAt: quote.lastPriceAt || '',
         marketValue: round2_(marketValue),
         unrealizedPnl: round2_(unrealizedPnl),
         realizedPnl: round2_(p.realizedPnl),

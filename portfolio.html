@@ -43,6 +43,7 @@
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">持股</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">均價</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">現價</th>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">價格時間</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">市值</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">未實現損益</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">已實現損益</th>
@@ -93,6 +94,8 @@
       const val = Number(n) || 0;
       return `${val >= 0 ? '+' : ''}${money(val)}`;
     };
+    const displayPrice = (n) => (Number(n) > 0 ? money(n) : '--');
+    const priceTime = (p) => p.lastPriceAt || p.priceSource || '--';
         const sideLabel = (side) => {
           const m = {
             BUY: '買進',
@@ -134,8 +137,9 @@
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${p.name || ''}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${fmt.format(Number(p.shares) || 0)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.avgCost)}</td>
-            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.lastPrice)}</td>
-            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.marketValue)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${displayPrice(p.lastPrice)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:left;">${priceTime(p)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${Number(p.lastPrice) > 0 ? money(p.marketValue) : '--'}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:${Number(p.unrealizedPnl) >= 0 ? '#0a7d2e' : '#c62828'};">${signed(p.unrealizedPnl)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:${Number(p.realizedPnl) >= 0 ? '#0a7d2e' : '#c62828'};">${signed(p.realizedPnl)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:#0a7d2e;">${signed(p.dividendCash)}</td>

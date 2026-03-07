@@ -108,7 +108,7 @@
 
     async function loadPortfolio() {
       try {
-        const res = await fetch('data/portfolio.json', { cache: 'no-store' });
+        const res = await fetch('data/portfolio.json?v=' + Date.now(), { cache: 'no-store' });
         const data = await res.json();
 
         document.getElementById('updated-at').textContent = `更新時間：${data.updatedAt || '未提供'}（${data.market || 'TW'}）`;

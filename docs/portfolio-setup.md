@@ -7,9 +7,9 @@
 
 第一列欄位請固定如下：
 
-| Date | Symbol | Market | Side | Shares | Price | Amount | Fee | Tax | Note |
-|---|---|---|---|---:|---:|---:|---:|---:|---|
-| 2026/03/07 | 2330 | TW | BUY | 1000 | 978 | 0 | 1426 | 0 | 首次建倉 |
+| Date | Symbol | Market | Side | Shares | Price | Amount | FeeTax | Note |
+|---|---|---|---|---:|---:|---:|---:|---|
+| 2026/03/07 | 2330 | TW | BUY | 1000 | 978 | 0 | 1426 | 首次建倉 |
 
 欄位說明：
 - `Date`: 交易日期（YYYY-MM-DD）
@@ -20,8 +20,7 @@
 - `Shares`: 股數（股票股利可填配股股數）
 - `Price`: 成交價
 - `Amount`: 金額（現金股利建議填總金額）
-- `Fee`: 手續費
-- `Tax`: 交易稅（賣出有）
+- `FeeTax`: 費用（手續費+交易稅，合併一欄）
 - `Note`: 備註
 
 ## 2) 安裝 Apps Script
@@ -61,7 +60,6 @@
 - Side / 買賣別 / 買賣 / 類型（可填 BUY/SELL、買/賣、現金股利、股票股利）
 - Shares / 股數
 - Price / 成交價 / 價格
-- Fee / 手續費
-- Tax / 交易稅 / 稅
+- FeeTax / 費用 / 手續費+交易稅
 - Amount / 金額 / 總金額（股利用）
 - Note / 備註

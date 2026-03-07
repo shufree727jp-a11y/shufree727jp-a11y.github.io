@@ -45,6 +45,7 @@ function readTrades_(sheetName) {
     shares: pickCol_(idx, ['Shares', '股數']),
     price: pickCol_(idx, ['Price', '成交價', '價格', '每股金額']),
     amount: pickCol_(idx, ['Amount', '金額', '總金額']),
+    feeTax: pickCol_(idx, ['FeeTax', '費用', '手續費+交易稅', '手續費及交易稅']),
     fee: pickCol_(idx, ['Fee', '手續費']),
     tax: pickCol_(idx, ['Tax', '交易稅', '稅']),
     note: pickCol_(idx, ['Note', '備註'])
@@ -60,6 +61,7 @@ function readTrades_(sheetName) {
       const shares = col.shares >= 0 ? Number(r[col.shares] || 0) : 0;
       const price = col.price >= 0 ? Number(r[col.price] || 0) : 0;
       const amount = col.amount >= 0 ? Number(r[col.amount] || 0) : 0;
+      const feeTax = col.feeTax >= 0 ? Number(r[col.feeTax] || 0) : ((col.fee >= 0 ? Number(r[col.fee] || 0) : 0) + (col.tax >= 0 ? Number(r[col.tax] || 0) : 0));
       return {
         date: col.date >= 0 ? formatDate_(r[col.date]) : '',
         symbol: String(r[col.symbol] || '').trim(),
@@ -68,8 +70,7 @@ function readTrades_(sheetName) {
         shares,
         price,
         amount,
-        fee: col.fee >= 0 ? Number(r[col.fee] || 0) : 0,
-        tax: col.tax >= 0 ? Number(r[col.tax] || 0) : 0,
+        feeTax,
         note: col.note >= 0 ? String(r[col.note] || '').trim() : ''
       };
     })
@@ -119,11 +120,11 @@ function buildPortfolio_(trades, priceMap) {
     const p = positions[t.symbol];
 
     if (t.side === 'BUY') {
-      p.totalCost += t.shares * t.price + t.fee + t.tax;
+      p.totalCost += t.shares * t.price + t.feeTax;
       p.shares += t.shares;
     } else if (t.side === 'SELL') {
       const avg = p.shares > 0 ? p.totalCost / p.shares : 0;
-      const proceeds = t.shares * t.price - t.fee - t.tax;
+      const proceeds = t.shares * t.price - t.feeTax;
       const costOut = avg * t.shares;
       p.realizedPnl += proceeds - costOut;
       p.totalCost -= costOut;
@@ -132,7 +133,7 @@ function buildPortfolio_(trades, priceMap) {
       p.shares = Math.max(0, p.shares);
     } else if (t.side === 'DIVIDEND_CASH') {
       const cash = t.amount > 0 ? t.amount : (t.shares * t.price);
-      p.dividendCash += Math.max(0, cash - t.fee - t.tax);
+      p.dividendCash += Math.max(0, cash - t.feeTax);
     } else if (t.side === 'DIVIDEND_STOCK') {
       const bonusShares = t.shares > 0 ? t.shares : (t.amount > 0 ? t.amount : 0);
       p.dividendStockShares += bonusShares;

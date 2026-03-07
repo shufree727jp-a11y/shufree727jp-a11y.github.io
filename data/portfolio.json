@@ -35,8 +35,7 @@
       "shares": 0,
       "price": 0,
       "amount": 0,
-      "fee": 0,
-      "tax": 0,
+      "feeTax": 0,
       "note": "支援 BUY/SELL/DIVIDEND_CASH/DIVIDEND_STOCK"
     }
   ]

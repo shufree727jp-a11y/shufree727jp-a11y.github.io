@@ -66,8 +66,7 @@
                             <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">類型</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">股數</th>
                             <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">成交價</th>
-                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">手續費</th>
-                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">交易稅</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">費用(手續費+交易稅)</th>
                             <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">備註</th>
                         </tr>
                     </thead>
@@ -152,8 +151,7 @@
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${sideLabel(t.side)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${fmt.format(Number(t.shares) || 0)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.price)}</td>
-            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.fee)}</td>
-            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.tax)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.feeTax)}</td>
             <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.note || ''}</td>
           </tr>
         `).join('');

@@ -112,7 +112,7 @@ function fetchFromTWSE_(symbol) {
 
   for (const url of urls) {
     try {
-      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true, headers: { 'User-Agent': 'Mozilla/5.0' } });
       if (res.getResponseCode() !== 200) continue;
       const data = JSON.parse(res.getContentText());
       const arr = data.msgArray || [];
@@ -122,12 +122,16 @@ function fetchFromTWSE_(symbol) {
       const name = row.n || symbol;
       const z = Number(row.z || 0);
       const y = Number(row.y || 0);
+      const pz = Number(row.pz || 0); // 最近揭示成交價（有些時段 z 會是 '-'）
       let lastPrice = 0;
       let priceSource = '無即時';
 
       if (z > 0) {
         lastPrice = z;
         priceSource = 'TWSE當盤';
+      } else if (pz > 0) {
+        lastPrice = pz;
+        priceSource = 'TWSE最近成交';
       } else if (y > 0) {
         lastPrice = y;
         priceSource = 'TWSE昨收';
@@ -156,7 +160,7 @@ function fetchFromYahoo_(symbol) {
   for (const ys of ySymbols) {
     const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(ys)}`;
     try {
-      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true, headers: { 'User-Agent': 'Mozilla/5.0' } });
       if (res.getResponseCode() !== 200) continue;
 
       const data = JSON.parse(res.getContentText());

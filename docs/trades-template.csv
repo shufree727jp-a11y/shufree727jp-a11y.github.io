@@ -1,0 +1,3 @@
+Date,Symbol,Market,Side,Shares,Price,Fee,Tax,Note
+2026-03-07,2330,TW,BUY,1000,978,1426,0,首次建倉
+2026-03-10,2330,TW,SELL,500,1015,740,1522,分批了結

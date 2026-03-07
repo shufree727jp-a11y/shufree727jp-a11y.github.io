@@ -80,51 +80,110 @@ function readTrades_(sheetName) {
 function fetchTWPrices_(symbols) {
   const out = {};
   symbols.forEach(symbol => {
-    const urls = [
-      `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`,
-      `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${symbol}.tw&json=1&delay=0`
-    ];
+    let quote = fetchFromTWSE_(symbol);
 
-    let price = 0;
-    let name = symbol;
-    let priceSource = 'NO_DATA';
-    let lastPriceAt = '';
-
-    for (const url of urls) {
-      try {
-        const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
-        if (res.getResponseCode() !== 200) continue;
-        const data = JSON.parse(res.getContentText());
-        const arr = data.msgArray || [];
-        if (!arr.length) continue;
-
-        const row = arr[0];
-        name = row.n || symbol;
-        const z = Number(row.z || 0);
-        const y = Number(row.y || 0);
-        // tlong: 成交時間(毫秒)
-        if (row.tlong) {
-          try {
-            lastPriceAt = Utilities.formatDate(new Date(Number(row.tlong)), 'Asia/Taipei', 'yyyy-MM-dd HH:mm:ss');
-          } catch (e) {}
-        }
-
-        if (z > 0) {
-          price = z;
-          priceSource = '當盤';
-        } else if (y > 0) {
-          price = y;
-          priceSource = '昨收';
-        }
-
-        if (price > 0) break;
-      } catch (e) {}
+    // 1) 先用 TWSE MIS；2) 抓不到再用 Yahoo Finance；3) 再抓不到標示無即時
+    if (!(quote && quote.lastPrice > 0)) {
+      const yahooQuote = fetchFromYahoo_(symbol);
+      if (yahooQuote && yahooQuote.lastPrice > 0) {
+        quote = yahooQuote;
+      }
     }
 
-    out[symbol] = { lastPrice: price, name, priceSource, lastPriceAt };
+    if (!(quote && quote.lastPrice > 0)) {
+      quote = {
+        lastPrice: 0,
+        name: symbol,
+        priceSource: '無即時',
+        lastPriceAt: ''
+      };
+    }
+
+    out[symbol] = quote;
   });
   return out;
 }
+
+function fetchFromTWSE_(symbol) {
+  const urls = [
+    `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`,
+    `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${symbol}.tw&json=1&delay=0`
+  ];
+
+  for (const url of urls) {
+    try {
+      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      if (res.getResponseCode() !== 200) continue;
+      const data = JSON.parse(res.getContentText());
+      const arr = data.msgArray || [];
+      if (!arr.length) continue;
+
+      const row = arr[0];
+      const name = row.n || symbol;
+      const z = Number(row.z || 0);
+      const y = Number(row.y || 0);
+      let lastPrice = 0;
+      let priceSource = '無即時';
+
+      if (z > 0) {
+        lastPrice = z;
+        priceSource = 'TWSE當盤';
+      } else if (y > 0) {
+        lastPrice = y;
+        priceSource = 'TWSE昨收';
+      }
+
+      let lastPriceAt = '';
+      if (row.tlong) {
+        try {
+          lastPriceAt = Utilities.formatDate(new Date(Number(row.tlong)), 'Asia/Taipei', 'yyyy-MM-dd HH:mm:ss');
+        } catch (e) {}
+      }
+
+      if (lastPrice > 0) {
+        return { lastPrice, name, priceSource, lastPriceAt };
+      }
+    } catch (e) {}
+  }
+
+  return null;
+}
+
+function fetchFromYahoo_(symbol) {
+  // Yahoo 台股：上市用 .TW，上櫃用 .TWO
+  const ySymbols = [`${symbol}.TW`, `${symbol}.TWO`];
+
+  for (const ys of ySymbols) {
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(ys)}`;
+    try {
+      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      if (res.getResponseCode() !== 200) continue;
+
+      const data = JSON.parse(res.getContentText());
+      const result = (((data || {}).quoteResponse || {}).result || [])[0];
+      if (!result) continue;
+
+      const lastPrice = Number(result.regularMarketPrice || 0);
+      if (!(lastPrice > 0)) continue;
+
+      const name = result.shortName || result.longName || symbol;
+      const ts = Number(result.regularMarketTime || 0);
+      const lastPriceAt = ts > 0
+        ? Utilities.formatDate(new Date(ts * 1000), 'Asia/Taipei', 'yyyy-MM-dd HH:mm:ss')
+        : '';
+
+      return {
+        lastPrice,
+        name,
+        priceSource: 'Yahoo',
+        lastPriceAt
+      };
+    } catch (e) {}
+  }
+
+  return null;
+}
+
 
 function buildPortfolio_(trades, priceMap) {
   const positions = {}; // symbol -> {shares, totalCost, realizedPnl, dividendCash, dividendStockShares}

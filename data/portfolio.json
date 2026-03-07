@@ -1,0 +1,35 @@
+{
+  "updatedAt": "2026-03-07T16:00:00+08:00",
+  "market": "TW",
+  "currency": "TWD",
+  "summary": {
+    "totalCost": 0,
+    "marketValue": 0,
+    "unrealizedPnl": 0,
+    "unrealizedPnlPct": 0
+  },
+  "positions": [
+    {
+      "symbol": "2330",
+      "name": "台積電",
+      "shares": 0,
+      "avgCost": 0,
+      "lastPrice": 0,
+      "marketValue": 0,
+      "unrealizedPnl": 0,
+      "unrealizedPnlPct": 0
+    }
+  ],
+  "trades": [
+    {
+      "date": "2026-03-07",
+      "symbol": "2330",
+      "side": "BUY",
+      "shares": 0,
+      "price": 0,
+      "fee": 0,
+      "tax": 0,
+      "note": "請用 Google Sheet/腳本更新"
+    }
+  ]
+}

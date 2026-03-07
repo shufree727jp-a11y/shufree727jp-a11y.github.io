@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投資紀錄 | 奈米光學與生醫影像實驗室</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="nav-container">
+        <div class="logo">奈米光學與生醫影像實驗室</div>
+        <nav class="nav-links">
+            <a href="index.html">首頁</a>
+            <a href="about.html">關於實驗室</a>
+            <a href="research.html">研究方向</a>
+            <a href="members.html">成員</a>
+            <a href="publications.html">成果與論文</a>
+            <a href="portfolio.html">投資紀錄</a>
+            <a href="contact.html">聯絡資訊</a>
+        </nav>
+    </div>
+</header>
+
+<section>
+    <div class="section-inner">
+        <h1 class="section-title">台股投資紀錄（每日收盤更新）</h1>
+        <p class="section-subtitle">Portfolio Summary</p>
+        <p class="text-small text-muted" id="updated-at">更新時間：讀取中...</p>
+
+        <div class="grid-3 mt-2" id="summary-cards"></div>
+
+        <h2 class="section-title mt-3">持倉明細</h2>
+        <div class="card">
+            <div style="overflow:auto;">
+                <table id="positions-table" style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">代號</th>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">名稱</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">持股</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">均價</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">現價</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">市值</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">未實現損益</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2 class="section-title mt-3">交易紀錄</h2>
+        <div class="card">
+            <div style="overflow:auto;">
+                <table id="trades-table" style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">日期</th>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">代號</th>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">買/賣</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">股數</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">成交價</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">手續費</th>
+                            <th style="text-align:right; border-bottom:1px solid #eee; padding:0.5rem;">交易稅</th>
+                            <th style="text-align:left; border-bottom:1px solid #eee; padding:0.5rem;">備註</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-inner">
+        <div>© <span id="year"></span> 奈米光學與生醫影像實驗室</div>
+        <div>投資紀錄</div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const fmt = new Intl.NumberFormat('zh-TW');
+    const money = (n) => (Number(n) || 0).toLocaleString('zh-TW', { maximumFractionDigits: 2 });
+    const signed = (n) => {
+      const val = Number(n) || 0;
+      return `${val >= 0 ? '+' : ''}${money(val)}`;
+    };
+
+    async function loadPortfolio() {
+      try {
+        const res = await fetch('data/portfolio.json', { cache: 'no-store' });
+        const data = await res.json();
+
+        document.getElementById('updated-at').textContent = `更新時間：${data.updatedAt || '未提供'}（${data.market || 'TW'}）`;
+
+        const summary = data.summary || {};
+        const cards = [
+          { label: '總成本', value: money(summary.totalCost), color: '#222' },
+          { label: '總市值', value: money(summary.marketValue), color: '#222' },
+          { label: '未實現損益', value: signed(summary.unrealizedPnl), color: Number(summary.unrealizedPnl) >= 0 ? '#0a7d2e' : '#c62828' }
+        ];
+
+        document.getElementById('summary-cards').innerHTML = cards.map(c => `
+          <div class="card">
+            <div class="text-small text-muted">${c.label}</div>
+            <div style="font-size:1.4rem; font-weight:700; color:${c.color};">${c.value}</div>
+          </div>
+        `).join('');
+
+        const posBody = document.querySelector('#positions-table tbody');
+        posBody.innerHTML = (data.positions || []).map(p => `
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${p.symbol || ''}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${p.name || ''}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${fmt.format(Number(p.shares) || 0)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.avgCost)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.lastPrice)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(p.marketValue)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right; color:${Number(p.unrealizedPnl) >= 0 ? '#0a7d2e' : '#c62828'};">${signed(p.unrealizedPnl)}</td>
+          </tr>
+        `).join('');
+
+        const tradeBody = document.querySelector('#trades-table tbody');
+        tradeBody.innerHTML = (data.trades || []).map(t => `
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.date || ''}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.symbol || ''}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.side || ''}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${fmt.format(Number(t.shares) || 0)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.price)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.fee)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1; text-align:right;">${money(t.tax)}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid #f1f1f1;">${t.note || ''}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        document.getElementById('updated-at').textContent = `更新時間：讀取失敗（${err.message}）`;
+      }
+    }
+
+    loadPortfolio();
+</script>
+
+</body>
+</html>

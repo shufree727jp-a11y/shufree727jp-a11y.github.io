@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Sheet 範本連結 | 奈米光學與生醫影像實驗室</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <div class="nav-container">
+    <div class="logo">奈米光學與生醫影像實驗室</div>
+    <nav class="nav-links">
+      <a href="index.html">首頁</a>
+      <a href="about.html">關於實驗室</a>
+      <a href="research.html">研究方向</a>
+      <a href="members.html">成員</a>
+      <a href="publications.html">成果與論文</a>
+      <a href="portfolio.html">投資紀錄</a>
+      <a href="sheet-template.html">表單範本</a>
+      <a href="contact.html">聯絡資訊</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="section-inner">
+    <h1 class="section-title">Google Sheet 範本連結（台股投資紀錄）</h1>
+    <p class="section-subtitle">一鍵建立 / 匯入 / 設定</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">1) 開新 Sheet</div>
+        <div class="card-body text-small">點下面按鈕直接建立新 Google Sheet，並把工作表命名為 <code>Trades</code>。</div>
+        <p class="mt-2"><a class="btn-primary" href="https://sheet.new" target="_blank" rel="noopener">開啟 sheet.new</a></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2) 匯入範本 CSV</div>
+        <div class="card-body text-small">匯入含欄位與範例資料的 CSV 範本。</div>
+        <p class="mt-2"><a class="btn-primary" href="docs/trades-template.csv" target="_blank" rel="noopener">開啟 CSV 範本</a></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">3) 貼上 Apps Script</div>
+        <div class="card-body text-small">貼上更新腳本，設定每日收盤後觸發。</div>
+        <p class="mt-2"><a class="btn-primary" href="scripts/update_portfolio.gs" target="_blank" rel="noopener">開啟腳本檔</a></p>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-title">中文欄位支援</div>
+      <div class="card-body text-small">
+        日期、股票代號、市場、買賣別、股數、成交價、手續費、交易稅、備註<br>
+        （買賣別可填：買/賣 或 BUY/SELL）
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>© <span id="year"></span> 奈米光學與生醫影像實驗室</div>
+    <div>Google Sheet 範本連結</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

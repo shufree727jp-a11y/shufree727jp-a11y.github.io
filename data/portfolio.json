@@ -1,36 +1,64 @@
 {
-  "updatedAt": "2026-03-07T23:16:16+08:00",
+  "updatedAt": "2026-03-07T23:58:51+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
-    "totalCost": 489714.75,
+    "totalCost": 979428.5,
     "marketValue": 0.0,
-    "unrealizedPnl": -489713.0,
-    "realizedPnl": -241975.0,
+    "unrealizedPnl": -979426.0,
+    "realizedPnl": 247738.0,
     "dividendCash": 17500.0,
     "totalPnl": -714188.0,
-    "totalPnlPct": -1.4584
+    "totalPnlPct": -0.7292
   },
   "positions": [
     {
-      "symbol": "股票代號",
-      "name": "股票代號",
-      "shares": 525.0,
-      "avgCost": 932.79,
+      "symbol": "2330",
+      "name": "2330",
+      "shares": 1025.0,
+      "avgCost": 955.54,
       "lastPrice": 0,
       "marketValue": 0.0,
-      "unrealizedPnl": -489713.0,
-      "realizedPnl": -241975.0,
-      "dividendCash": 17500.0,
+      "unrealizedPnl": -979426.0,
+      "realizedPnl": 0.0,
+      "dividendCash": 0.0,
       "dividendStockShares": 25.0,
-      "totalPnl": -714188.0,
-      "totalPnlPct": -1.4584
+      "totalPnl": -979426.0,
+      "totalPnlPct": -1.0
+    },
+    {
+      "symbol": "0050",
+      "name": "0050",
+      "shares": 0,
+      "avgCost": 0,
+      "lastPrice": 0,
+      "marketValue": 0,
+      "unrealizedPnl": 0,
+      "realizedPnl": 247738.0,
+      "dividendCash": 0.0,
+      "dividendStockShares": 0.0,
+      "totalPnl": 247738.0,
+      "totalPnlPct": 0
+    },
+    {
+      "symbol": "0056",
+      "name": "0056",
+      "shares": 0.0,
+      "avgCost": 0,
+      "lastPrice": 0,
+      "marketValue": 0.0,
+      "unrealizedPnl": 0.0,
+      "realizedPnl": 0.0,
+      "dividendCash": 17500.0,
+      "dividendStockShares": 0.0,
+      "totalPnl": 17500.0,
+      "totalPnlPct": 0
     }
   ],
   "trades": [
     {
       "date": "2026-03-07",
-      "symbol": "股票代號",
+      "symbol": "2330",
       "market": "TW",
       "side": "BUY",
       "shares": 1000.0,
@@ -41,7 +69,7 @@
     },
     {
       "date": "2026-03-10",
-      "symbol": "股票代號",
+      "symbol": "0050",
       "market": "TW",
       "side": "SELL",
       "shares": 500.0,
@@ -52,7 +80,7 @@
     },
     {
       "date": "2026-07-10",
-      "symbol": "股票代號",
+      "symbol": "0056",
       "market": "TW",
       "side": "DIVIDEND_CASH",
       "shares": 0.0,
@@ -63,7 +91,7 @@
     },
     {
       "date": "2026-07-10",
-      "symbol": "股票代號",
+      "symbol": "2330",
       "market": "TW",
       "side": "DIVIDEND_STOCK",
       "shares": 25.0,

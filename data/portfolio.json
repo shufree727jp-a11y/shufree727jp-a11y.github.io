@@ -1,42 +1,76 @@
 {
-  "updatedAt": "2026-03-07T16:00:00+08:00",
+  "updatedAt": "2026-03-07T23:16:16+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
-    "totalCost": 0,
-    "marketValue": 0,
-    "unrealizedPnl": 0,
-    "realizedPnl": 0,
-    "dividendCash": 0,
-    "totalPnl": 0,
-    "totalPnlPct": 0
+    "totalCost": 489714.75,
+    "marketValue": 0.0,
+    "unrealizedPnl": -489713.0,
+    "realizedPnl": -241975.0,
+    "dividendCash": 17500.0,
+    "totalPnl": -714188.0,
+    "totalPnlPct": -1.4584
   },
   "positions": [
     {
-      "symbol": "2330",
-      "name": "台積電",
-      "shares": 0,
-      "avgCost": 0,
+      "symbol": "股票代號",
+      "name": "股票代號",
+      "shares": 525.0,
+      "avgCost": 932.79,
       "lastPrice": 0,
-      "marketValue": 0,
-      "unrealizedPnl": 0,
-      "realizedPnl": 0,
-      "dividendCash": 0,
-      "dividendStockShares": 0,
-      "totalPnl": 0,
-      "totalPnlPct": 0
+      "marketValue": 0.0,
+      "unrealizedPnl": -489713.0,
+      "realizedPnl": -241975.0,
+      "dividendCash": 17500.0,
+      "dividendStockShares": 25.0,
+      "totalPnl": -714188.0,
+      "totalPnlPct": -1.4584
     }
   ],
   "trades": [
     {
       "date": "2026-03-07",
-      "symbol": "2330",
+      "symbol": "股票代號",
+      "market": "TW",
       "side": "BUY",
-      "shares": 0,
-      "price": 0,
-      "amount": 0,
-      "feeTax": 0,
-      "note": "支援 BUY/SELL/DIVIDEND_CASH/DIVIDEND_STOCK"
+      "shares": 1000.0,
+      "price": 978.0,
+      "amount": 0.0,
+      "feeTax": 1426.0,
+      "note": "首次建倉"
+    },
+    {
+      "date": "2026-03-10",
+      "symbol": "股票代號",
+      "market": "TW",
+      "side": "SELL",
+      "shares": 500.0,
+      "price": 500.0,
+      "amount": 0.0,
+      "feeTax": 2262.0,
+      "note": "分批了結"
+    },
+    {
+      "date": "2026-07-10",
+      "symbol": "股票代號",
+      "market": "TW",
+      "side": "DIVIDEND_CASH",
+      "shares": 0.0,
+      "price": 0.0,
+      "amount": 17500.0,
+      "feeTax": 0.0,
+      "note": "每股35元*500股"
+    },
+    {
+      "date": "2026-07-10",
+      "symbol": "股票代號",
+      "market": "TW",
+      "side": "DIVIDEND_STOCK",
+      "shares": 25.0,
+      "price": 0.0,
+      "amount": 0.0,
+      "feeTax": 0.0,
+      "note": "配股"
     }
   ]
 }

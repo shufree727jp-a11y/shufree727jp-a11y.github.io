@@ -14,6 +14,11 @@ function dailyUpdateTWPortfolio() {
   const priceMap = fetchTWPrices_(symbols);
 
   const result = buildPortfolio_(trades, priceMap);
+
+  // 若本次抓不到，沿用上一版有效價格，並標示來源為「沿用前值」
+  const prevData = fetchCurrentJsonFromGitHub_(cfg, 'data/portfolio.json');
+  applyPreviousPrices_(result, prevData);
+
   pushJsonToGitHub_(cfg, 'data/portfolio.json', result);
 }
 
@@ -24,6 +29,85 @@ function getConfig_() {
     owner: p.getProperty('GITHUB_OWNER'),
     repo: p.getProperty('GITHUB_REPO'),
     branch: p.getProperty('GITHUB_BRANCH') || 'main'
+  };
+}
+
+
+function fetchCurrentJsonFromGitHub_(cfg, path) {
+  if (!cfg.token || !cfg.owner || !cfg.repo) return null;
+  const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${cfg.branch}`;
+
+  try {
+    const res = UrlFetchApp.fetch(api, {
+      method: 'get',
+      muteHttpExceptions: true,
+      headers: {
+        Authorization: `token ${cfg.token}`,
+        Accept: 'application/vnd.github+json'
+      }
+    });
+
+    if (res.getResponseCode() !== 200) return null;
+    const data = JSON.parse(res.getContentText());
+    const content = Utilities.newBlob(Utilities.base64Decode(data.content || ''), 'application/json').getDataAsString('UTF-8');
+    return JSON.parse(content);
+  } catch (e) {
+    return null;
+  }
+}
+
+function applyPreviousPrices_(result, prevData) {
+  if (!result || !result.positions || !prevData || !prevData.positions) return;
+
+  const prevMap = {};
+  (prevData.positions || []).forEach(p => {
+    prevMap[p.symbol] = p;
+  });
+
+  result.positions = result.positions.map(p => {
+    const noLivePrice = !(Number(p.lastPrice) > 0);
+    const prev = prevMap[p.symbol];
+    const canUsePrev = prev && Number(prev.lastPrice) > 0;
+
+    if (noLivePrice && canUsePrev) {
+      const lastPrice = Number(prev.lastPrice);
+      const marketValue = round2_(Number(p.shares) * lastPrice);
+      const unrealizedPnl = round2_(marketValue - Number(p.avgCost) * Number(p.shares));
+      const totalPnl = round2_(unrealizedPnl + Number(p.realizedPnl || 0) + Number(p.dividendCash || 0));
+      const cost = Number(p.avgCost) * Number(p.shares);
+      const totalPnlPct = cost > 0 ? round4_(totalPnl / cost) : 0;
+
+      return {
+        ...p,
+        lastPrice,
+        lastPriceAt: prev.lastPriceAt || '',
+        priceSource: `沿用前值(${prev.priceSource || '先前來源'})`,
+        marketValue,
+        unrealizedPnl,
+        totalPnl,
+        totalPnlPct
+      };
+    }
+
+    return p;
+  });
+
+  // 重新彙總 summary
+  const totalCost = result.positions.reduce((s, x) => s + Number(x.avgCost || 0) * Number(x.shares || 0), 0);
+  const marketValue = result.positions.reduce((s, x) => s + Number(x.marketValue || 0), 0);
+  const unrealizedPnl = result.positions.reduce((s, x) => s + Number(x.unrealizedPnl || 0), 0);
+  const realizedPnl = result.positions.reduce((s, x) => s + Number(x.realizedPnl || 0), 0);
+  const dividendCash = result.positions.reduce((s, x) => s + Number(x.dividendCash || 0), 0);
+  const totalPnl = unrealizedPnl + realizedPnl + dividendCash;
+
+  result.summary = {
+    totalCost: round2_(totalCost),
+    marketValue: round2_(marketValue),
+    unrealizedPnl: round2_(unrealizedPnl),
+    realizedPnl: round2_(realizedPnl),
+    dividendCash: round2_(dividendCash),
+    totalPnl: round2_(totalPnl),
+    totalPnlPct: totalCost > 0 ? round4_(totalPnl / totalCost) : 0
   };
 }
 

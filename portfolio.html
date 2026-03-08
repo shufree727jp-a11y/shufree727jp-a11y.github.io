@@ -95,7 +95,11 @@
       return `${val >= 0 ? '+' : ''}${money(val)}`;
     };
     const displayPrice = (n) => (Number(n) > 0 ? money(n) : '--');
-    const priceTime = (p) => p.lastPriceAt || p.priceSource || '--';
+    const priceTime = (p) => {
+      const t = p.lastPriceAt || '';
+      const src = p.priceSource || '無即時';
+      return t ? `${t}｜${src}` : src;
+    };
         const sideLabel = (side) => {
           const m = {
             BUY: '買進',

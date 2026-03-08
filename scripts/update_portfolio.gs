@@ -11,7 +11,8 @@ function dailyUpdateTWPortfolio() {
   const trades = readTrades_('Trades');
 
   const symbols = [...new Set(trades.map(t => t.symbol))].filter(Boolean);
-  const priceMap = fetchTWPrices_(symbols);
+  const prevPriceMap = getPreviousPriceMap_(cfg, 'data/portfolio.json');
+  const priceMap = fetchTWPrices_(symbols, prevPriceMap);
 
   const result = buildPortfolio_(trades, priceMap);
 
@@ -111,6 +112,42 @@ function applyPreviousPrices_(result, prevData) {
   };
 }
 
+
+function getPreviousPriceMap_(cfg, path) {
+  const out = {};
+  try {
+    const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${cfg.branch}`;
+    const res = UrlFetchApp.fetch(api, {
+      method: 'get',
+      muteHttpExceptions: true,
+      headers: {
+        Authorization: `token ${cfg.token}`,
+        Accept: 'application/vnd.github+json'
+      }
+    });
+    if (res.getResponseCode() !== 200) return out;
+
+    const data = JSON.parse(res.getContentText());
+    if (!data.content) return out;
+
+    const text = Utilities.newBlob(Utilities.base64Decode(data.content)).getDataAsString('UTF-8');
+    const json = JSON.parse(text);
+    const positions = json.positions || [];
+    positions.forEach(p => {
+      if (!p || !p.symbol) return;
+      out[p.symbol] = {
+        lastPrice: Number(p.lastPrice || 0),
+        name: p.name || p.symbol,
+        lastPriceAt: p.lastPriceAt || '',
+        priceSource: p.priceSource || ''
+      };
+    });
+  } catch (e) {
+    // ignore, fallback to empty map
+  }
+  return out;
+}
+
 function readTrades_(sheetName) {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   if (!sh) throw new Error(`找不到工作表：${sheetName}`);
@@ -161,7 +198,7 @@ function readTrades_(sheetName) {
     .sort((a, b) => (a.date > b.date ? 1 : -1));
 }
 
-function fetchTWPrices_(symbols) {
+function fetchTWPrices_(symbols, prevPriceMap) {
   const out = {};
   symbols.forEach(symbol => {
     let quote = fetchFromTWSE_(symbol);
@@ -178,6 +215,18 @@ function fetchTWPrices_(symbols) {
       const yahooQuote = fetchFromYahoo_(symbol);
       if (yahooQuote && yahooQuote.lastPrice > 0) {
         quote = yahooQuote;
+      }
+    }
+
+    if (!(quote && quote.lastPrice > 0)) {
+      const prev = (prevPriceMap || {})[symbol];
+      if (prev && Number(prev.lastPrice) > 0) {
+        quote = {
+          lastPrice: Number(prev.lastPrice),
+          name: prev.name || symbol,
+          priceSource: '沿用前值',
+          lastPriceAt: prev.lastPriceAt || ''
+        };
       }
     }
 

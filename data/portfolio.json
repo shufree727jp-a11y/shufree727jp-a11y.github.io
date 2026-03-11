@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-10T14:40:37+08:00",
+  "updatedAt": "2026-03-11T14:40:34+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
@@ -49,9 +49,9 @@
       "name": "元大高股息",
       "shares": 0,
       "avgCost": 0,
-      "lastPrice": 37.58,
-      "priceSource": "沿用前值",
-      "lastPriceAt": "2026-03-09 14:30:00",
+      "lastPrice": 38.64,
+      "priceSource": "TWSE當盤",
+      "lastPriceAt": "2026-03-11 14:30:00",
       "marketValue": 0,
       "unrealizedPnl": 0,
       "realizedPnl": 0,

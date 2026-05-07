@@ -1,15 +1,15 @@
 {
-  "updatedAt": "2026-05-06T14:40:34+08:00",
+  "updatedAt": "2026-05-07T14:40:37+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
     "totalCost": 979428.5,
-    "marketValue": 2306250,
-    "unrealizedPnl": 1326824,
+    "marketValue": 2367750,
+    "unrealizedPnl": 1388324,
     "realizedPnl": 247738,
     "dividendCash": 17500,
-    "totalPnl": 1592062,
-    "totalPnlPct": 1.6255
+    "totalPnl": 1653562,
+    "totalPnlPct": 1.6883
   },
   "positions": [
     {
@@ -17,16 +17,16 @@
       "name": "台積電",
       "shares": 1025,
       "avgCost": 955.54,
-      "lastPrice": 2250,
+      "lastPrice": 2310,
       "priceSource": "TWSE當盤",
-      "lastPriceAt": "2026-05-06 14:30:00",
-      "marketValue": 2306250,
-      "unrealizedPnl": 1326824,
+      "lastPriceAt": "2026-05-07 14:30:00",
+      "marketValue": 2367750,
+      "unrealizedPnl": 1388324,
       "realizedPnl": 0,
       "dividendCash": 0,
       "dividendStockShares": 25,
-      "totalPnl": 1326824,
-      "totalPnlPct": 1.3547
+      "totalPnl": 1388324,
+      "totalPnlPct": 1.4175
     },
     {
       "symbol": "0050",
@@ -49,9 +49,9 @@
       "name": "元大高股息",
       "shares": 0,
       "avgCost": 0,
-      "lastPrice": 41.92,
-      "priceSource": "沿用前值",
-      "lastPriceAt": "2026-05-04 14:30:00",
+      "lastPrice": 44.72,
+      "priceSource": "TWSE當盤",
+      "lastPriceAt": "2026-05-07 14:30:00",
       "marketValue": 0,
       "unrealizedPnl": 0,
       "realizedPnl": 0,

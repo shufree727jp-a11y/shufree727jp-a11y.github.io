@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-12T14:40:34+08:00",
+  "updatedAt": "2026-05-13T14:40:36+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
@@ -50,7 +50,7 @@
       "shares": 0,
       "avgCost": 0,
       "lastPrice": 45.58,
-      "priceSource": "TWSE當盤",
+      "priceSource": "沿用前值",
       "lastPriceAt": "2026-05-12 14:30:00",
       "marketValue": 0,
       "unrealizedPnl": 0,

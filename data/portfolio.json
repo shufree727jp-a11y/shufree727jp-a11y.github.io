@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-01T14:40:44+08:00",
+  "updatedAt": "2026-06-02T14:40:34+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
@@ -33,9 +33,9 @@
       "name": "元大台灣50",
       "shares": 0,
       "avgCost": 0,
-      "lastPrice": 102.55,
-      "priceSource": "沿用前值",
-      "lastPriceAt": "2026-05-27 14:30:00",
+      "lastPrice": 105.7,
+      "priceSource": "TWSE當盤",
+      "lastPriceAt": "2026-06-02 14:30:00",
       "marketValue": 0,
       "unrealizedPnl": 0,
       "realizedPnl": 247738,

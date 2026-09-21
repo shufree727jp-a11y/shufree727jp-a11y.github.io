@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-20T14:40:29+08:00",
+  "updatedAt": "2026-09-21T14:40:34+08:00",
   "market": "TW",
   "currency": "TWD",
   "summary": {
@@ -18,7 +18,7 @@
       "shares": 1025,
       "avgCost": 955.54,
       "lastPrice": 2460,
-      "priceSource": "TWSE當盤",
+      "priceSource": "沿用前值",
       "lastPriceAt": "2026-09-18 14:30:00",
       "marketValue": 2521500,
       "unrealizedPnl": 1542074,
@@ -34,7 +34,7 @@
       "shares": 0,
       "avgCost": 0,
       "lastPrice": 109.85,
-      "priceSource": "TWSE當盤",
+      "priceSource": "沿用前值",
       "lastPriceAt": "2026-09-18 14:30:00",
       "marketValue": 0,
       "unrealizedPnl": 0,
@@ -50,7 +50,7 @@
       "shares": 0,
       "avgCost": 0,
       "lastPrice": 56.85,
-      "priceSource": "TWSE當盤",
+      "priceSource": "沿用前值",
       "lastPriceAt": "2026-09-18 14:30:00",
       "marketValue": 0,
       "unrealizedPnl": 0,
